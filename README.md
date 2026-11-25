@@ -4,4 +4,6 @@ A home-screen iPhone app: volleyball workouts from popular Instagram reels, 3D d
 
 **Install on iPhone:** open the site in Safari → Share → Add to Home Screen.
 
+https://exaliate.github.io/volleyball-workouts/
+
 Everything runs on the phone and works offline after the first visit. Your sessions and saved reels are stored on the device.
