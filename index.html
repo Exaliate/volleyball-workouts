@@ -242,6 +242,10 @@ const S={
  cb:{n:'CB Physical Therapy: VB shoulders',u:'https://cbphysicaltherapy.com/how-to-stay-healthy-on-the-court-shoulder-injuries-in-volleyball/'},
  sw:{n:'SwimOutlet: beach VB shoulders',u:'https://www.swimoutlet.com/guides/preventing-shoulder-injuries-in-beach-volleyball/'},
  ad:{n:'adidas: volleyball agility drills',u:'https://www.adidas.com/us/blog/905806-6-volleyball-agility-drills-to-improve-speed'},
+ sk:{n:'STACK: Kings strength plan',u:'https://www.stack.com/?p=89725'},
+ st13:{n:'STACK: volleyball summer training guide',u:'https://www.stack.com/?p=123261'},
+ uk:{n:'TrainHeroic: Kentucky VB 3-day lifting',u:'https://marketplace.trainheroic.com/workout-plan/program/spurlock-program-1756903076'},
+ av:{n:'TrainHeroic: 20-week volleyball program',u:'https://marketplace.trainheroic.com/workout-plan/program/vivian-program-1717381527'},
  pj:{n:'@coach_joooooones · 1.5M views',u:'https://www.instagram.com/reel/DP1oD_UkWQD/',pop:1},
  pf:{n:'@volleyballfanss_ · 1.1M views',u:'https://www.instagram.com/reel/DKwr2kISjij/',pop:1},
  pv1:{n:'@theverticalguy · 1M views',u:'https://www.instagram.com/reel/DP4tgPpiLT8/',pop:1},
@@ -311,6 +315,11 @@ const BASE=[
  ['hollow','Hollow body hold','core','prw','3–4×25–35 s',4,'Low back pressed down, arms and legs long.',1],
  ['rdl','Split-stance RDL','strength','prw','3–4×8 each side',4,'Hinge at the hips over the front leg, flat back.',1],
  ['db-bench','Alternating DB bench press','strength','prw','3–4×6–8 each side',4,'One arm presses while the other holds at the top.',1],
+ ['leg-press','Leg press','strength','sk','3×8',3,'Lower until thighs and torso make about 90°, then drive the sled back up.'],
+ ['lat-pull','Wide-grip lat pulldown','strength','st13','3×10–12',3,'Pull the bar to the top of the chest, elbows down and back.',1],
+ ['cable-row','Seated cable row','strength','st13','3×12',3,'Sit tall, pull the handle to your stomach and squeeze the shoulder blades.',1],
+ ['leg-curl','Seated leg curl','strength','uk','3×10',3,'Curl the pad down and back under the seat; slow on the way up.',1],
+ ['face-pull','Cable face pull','shoulder','av','2×15',2,'Rope at head height; pull to your face with elbows high and thumbs back.',1],
  ['side-plank','Side plank leg raises','core','prw','3–4×12–15 each side',4,'Hips high; lift the top leg without rolling back.',1]
 ].map(a=>({id:a[0],n:a[1],c:a[2],s:a[3],d:a[4],k:a[5],cue:a[6],fs:!!a[7]||a[3]==='ig1',pat:a[8]||a[0]}));
 const BREELS=[
@@ -326,7 +335,7 @@ const BREELS=[
  {id:'ig2',url:S.ig2.u,title:'Core exercises for volleyball',by:'@_coach_evan',ex:['band-iso','band-3d','mb-axe','mb-fake','mb-pivot','mb-rain','cab-rot','cab-chop','landmine'],builtin:1},
  {id:'ig3',url:S.ig3.u,title:'Core, stability, strength and power',by:'@trainingfor_better_',ex:['oh-chop','mb-slam','walkout','kb-split'],builtin:1}
 ];
-const P={'Hit harder':['bar-rot','band-3d','mb-rain','landmine','cab-chop','walkout'],'Jump day':['altitude','app-box','lat-box','hang-clean','kb-split','bound'],'Shoulder prehab':['band-er','band-ir','sl-er','band-iso','pushup','plank'],'Court feet':['scissor','tcone','lat-squat','hurdle','bound']};
+const P={'Hit harder':['bar-rot','band-3d','mb-rain','landmine','cab-chop','walkout'],'Jump day':['altitude','app-box','lat-box','hang-clean','kb-split','bound'],'Shoulder prehab':['band-er','band-ir','sl-er','band-iso','pushup','plank'],'Court feet':['scissor','tcone','lat-squat','hurdle','bound'],'Gym machines':['leg-press','lat-pull','cable-row','leg-curl','face-pull','cab-chop']};
 const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeUrl=u=>/^https:\/\//i.test(u||'')?u:'#';
 
@@ -370,7 +379,7 @@ function renderReels(){
  const all=[...st.reels.slice().reverse(),...BREELS];$('rcount').textContent=`${st.reels.length} yours · ${BREELS.filter(r=>r.pop).length} popular`;
  $('rlist').innerHTML=all.map(r=>{const n=r.ex.filter(id=>by[id]).length;return `<div class="rl"><b>${esc(r.title||'Saved reel')}</b><small>${esc(r.by||'')}${r.by?' · ':''}${n} exercise${n===1?'':'s'}${r.builtin?' · built in':''}</small><a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener" style="font-size:14px;overflow-wrap:anywhere">${esc(r.url)}</a><div class="row"><button class="add" data-br="${esc(r.id)}">Build workout</button>${r.builtin?'':`<button class="add" data-dr="${esc(r.id)}">Delete</button>`}</div></div>`}).join('');
 }
-function setCur(id){if(!by[id])return;cur=id;const e=by[id];$('vname').textContent=e.n;$('vcat').textContent=C[e.c]||'';$('vcue').textContent=e.d+' · '+e.cue;document.querySelectorAll('.ex').forEach(a=>a.classList.toggle('cur',a.querySelector('.thumb')?.dataset.x===id));document.querySelectorAll('.it').forEach(li=>li.classList.toggle('cur',li.querySelector('.nm')?.dataset.w===id));anim.t=0}
+function setCur(id){if(!by[id])return;cur=id;try{view.yaw=A[by[id].pat]?.cy??.6}catch(_){};const e=by[id];$('vname').textContent=e.n;$('vcat').textContent=C[e.c]||'';$('vcue').textContent=e.d+' · '+e.cue;document.querySelectorAll('.ex').forEach(a=>a.classList.toggle('cur',a.querySelector('.thumb')?.dataset.x===id));document.querySelectorAll('.it').forEach(li=>li.classList.toggle('cur',li.querySelector('.nm')?.dataset.w===id));anim.t=0}
 const all=()=>{renderSess();renderLib();renderReels();save()};
 
 document.addEventListener('click',ev=>{
@@ -405,7 +414,7 @@ show(len);
 $('srclist').innerHTML=Object.values(S).map(s=>`<li><a href="${s.u}" target="_blank" rel="noopener">${esc(s.n)}</a></li>`).join('');
 
 /* ---------- animation library (directions: +x = model's left, +y up, +z forward) ---------- */
-const ST={t:[0,0,0],ua:[.12,-1,0],fa:[.08,-1,.15],th:[.07,-1,0],sh:[.07,-1,-.02],rx:0,ry:0,rz:0,px:0,pz:0,air:0,gy:0,toe:0};
+const ST={t:[0,0,0],ua:[.12,-1,0],fa:[.08,-1,.15],th:[.07,-1,0],sh:[.07,-1,-.02],rx:0,ry:0,rz:0,px:0,pz:0,air:0,gy:0,toe:0,k:0};
 const AT={t:[25,0,0],th:[.18,-.82,.55],sh:[.12,-.95,-.3]};
 const ARM={hold:{ua:[.25,-.75,.6],fa:[-.75,.15,.65]},oh:{ua:[.25,1,.25],fa:[-.5,1,.1]},fwd:{ua:[-.25,-.1,1],fa:[-.25,-.1,1]},low:{ua:[-.1,-.8,.5],fa:[-.45,-.55,.7]},high:{ua:[-.15,.55,.85],fa:[-.45,.35,.8]},back:{ua:[.85,-.5,-.3],fa:[.1,.75,.15]},rack:{ua:[.35,-.1,.95],fa:[-.1,.55,-.85]},ready:{ua:[.2,-.75,.6],fa:[.05,-.2,1]},swing:{ua:[.12,-.6,-.8],fa:[.1,-.6,-.8]},up:{ua:[.15,1,.25],fa:[.1,1,.2]}};
 const DEEP={t:[40,0,0],th:[.28,-.15,.95],sh:[.12,-.92,-.35]};
@@ -428,15 +437,15 @@ const A={
  'mb-fake':{pr:{ball:1,wall:[-1.95,1.1,.5,.1,2.2,2.6]},rel:{t0:.85,t1:1.1,hit:[-1.86,1.05,.55],att:1.95,h:.35,k:'wall'},b:m(AT,ARM.hold),f:[F(.5,{t:[20,-40,0]}),F(.5,{t:[20,60,0],ry:10}),F(.35,ARM.fwd,{t:[10,-50,0],ry:-25}),F(.6,ARM.fwd,{t:[10,-50,0],ry:-25})]},
  'mb-pivot':{pr:{ball:1,wall:[-1.95,1.1,.2,.1,2.2,2.6]},rel:{t0:.85,t1:1.05,hit:[-1.86,1,.15],att:1.65,h:.35,k:'wall'},b:m(AT,ARM.hold),f:[F(.7,{t:[20,70,0],ry:15}),F(.35,ARM.fwd,{t:[10,-55,0],ry:-40}),F(.6,ARM.fwd,{t:[10,-55,0],ry:-40})]},
  'mb-rain':{pr:{ball:1},rel:{t0:1.36,t1:1.5,hit:[-.55,.11,.5],att:2.15,h:.6,k:'floor'},b:m(AT),f:[F(.6,ARM.low,{t:[35,60,0]}),F(.6,ARM.oh,{t:[-5,0,0],th:ST.th,sh:ST.sh}),F(.45,{t:[55,-45,0],ry:-20,ua:[-.1,-.4,1],fa:[-.5,-.3,.8]}),F(.5,{t:[55,-45,0],ry:-20,ua:[-.1,-.4,1],fa:[-.5,-.3,.8]})]},
- 'cab-rot':{pr:{band:{a:[1.4,1.25,.2],to:'hands'}},b:m(AT,ARM.fwd,{t:[15,0,0]}),f:[F(1,{t:[15,60,0]}),F(1,{t:[15,-45,0],ry:-10})]},
- 'cab-chop':{pr:{band:{a:[1.2,2.1,.1],to:'hands'}},b:{},f:[F(.9,{t:[5,55,0],ua:[-.2,.55,.85],fa:[-.2,.55,.85]}),F(.8,AT,{t:[30,-45,0],ry:-15,ua:[-.2,-.6,.8],fa:[-.2,-.6,.8]})]},
+ 'cab-rot':{pr:{cable:{a:[1.4,1.25,.2],to:'hands'}},b:m(AT,ARM.fwd,{t:[15,0,0]}),f:[F(1,{t:[15,60,0]}),F(1,{t:[15,-45,0],ry:-10})]},
+ 'cab-chop':{pr:{cable:{a:[1.2,2.1,.1],to:'hands'}},b:{},f:[F(.9,{t:[5,55,0],ua:[-.2,.55,.85],fa:[-.2,.55,.85]}),F(.8,AT,{t:[30,-45,0],ry:-15,ua:[-.2,-.6,.8],fa:[-.2,-.6,.8]})]},
  'landmine':{pr:{lm:[0,.03,1.6]},b:m(AT),f:[F(.9,{t:[15,0,0],ua:[-.25,.3,1],fa:[-.25,.3,1]}),F(.9,{t:[25,55,0],ua:[-.2,-.6,.8],fa:[-.2,-.6,.8]}),F(.9,{t:[15,0,0],ua:[-.25,.3,1],fa:[-.25,.3,1]}),F(.9,{t:[25,-55,0],ua:[-.2,-.6,.8],fa:[-.2,-.6,.8]})]},
  'oh-chop':{pr:{band:{a:[0,2.4,-.8],to:'hands'}},b:{},f:[F(.9,{t:[-8,0,0],ua:[-.15,1,-.1],fa:[-.15,1,-.1]}),F(.8,AT,{t:[25,-35,0],ua:[-.2,-.5,.85],fa:[-.2,-.5,.85]})]},
  'mb-slam':{pr:{ball:1},rel:{t0:.4,t1:.55,hit:[0,.11,.45],att:.85,h:.28,k:'floor'},b:{},f:[F(.55,ARM.oh,{t:[-8,0,0],air:.03}),F(.3,DEEP,{t:[60,0,0],ua:[-.1,-.2,1],fa:[-.5,-.4,.8],th:[.25,-.4,.9]}),F(.5,DEEP,{t:[55,0,0],ua:[.1,-.25,1],fa:[-.45,-.35,.8],th:[.27,-.3,.92]}),F(.6,ARM.hold,{t:[8,0,0]})]},
  'walkout':{anc:'mid',b:{},f:[F(.8,{}),F(.9,{t:[100,0,0],ua:[.12,0,1],fa:[.05,0,1],sh:[.07,-1,.1]}),F(.9,{rx:45,t:[50,0,0],ua:[.12,0,1],fa:[.05,0,1]}),F(.8,{rx:78,ua:[.12,0,1],fa:[.1,0,1]}),F(.9,{rx:78,ua:[.12,0,1],fa:[.1,0,1]}),F(.9,{rx:45,t:[50,0,0],ua:[.12,0,1],fa:[.05,0,1]}),F(.8,{t:[100,0,0],ua:[.12,0,1],fa:[.05,0,1],sh:[.07,-1,.1]})]},
  'kb-split':{pr:{kb:1},b:{ua:[.05,-1,0],fa:[-.08,-1,.08]},f:[F(1,{th:[.08,-.85,.5],sh:[.08,-.97,-.1],ti:[-.08,-.8,-.55],si:[-.08,-.75,-.75]}),F(1,{t:[5,0,0],th:[.08,-.1,1],sh:[.08,-1,.05],ti:[-.08,-1,-.08],si:[-.08,-.1,-1]})]},
  'hang-clean':{pr:{bar:'hands'},b:{},f:[F(.6,{t:[40,0,0],th:[.12,-.9,.4],sh:[.1,-.98,-.2],ua:[.15,-.77,.64],fa:[.15,-.77,.64]}),F(.25,{t:[-5,0,0],air:.06,ua:[.15,-1,0],fa:[.15,-1,0]}),F(.6,ARM.rack,{t:[12,0,0],th:[.15,-.85,.45],sh:[.1,-.95,-.3]}),F(.6,ARM.rack,{})]},
- 'squat':{pr:{bar:'back'},b:m(ARM.back,{th:[.2,-1,.05],sh:[.2,-1,0]}),f:[F(1,{t:[5,0,0]}),F(1,DEEP)]},
+ 'squat':{pr:{bar:'back',rack:1},b:m(ARM.back,{th:[.2,-1,.05],sh:[.2,-1,0]}),f:[F(1,{t:[5,0,0]}),F(1,DEEP)]},
  'lat-squat':{ax:1,b:m(ARM.hold),f:[F(.8,{t:[10,0,0],th:[.45,-.9,.05],sh:[.45,-.9,.05]}),F(.8,{t:[35,0,0],th:[.55,-.3,.75],sh:[.15,-.95,-.25],ti:[-.6,-.8,.05],si:[-.6,-.8,.05]}),F(.8,{t:[10,0,0],th:[.45,-.9,.05],sh:[.45,-.9,.05]}),F(.8,{t:[35,0,0],th:[.6,-.8,.05],sh:[.6,-.8,.05],ti:[-.55,-.3,.75],si:[-.15,-.95,-.25]})]},
  'pushup':{anc:'mid',b:{rx:75,ua:[.3,-.1,1],fa:[.1,-.05,1]},f:[F(.9,{}),F(.9,{rx:86,ua:[.8,-.45,.35],fa:[.05,0,1]})]},
  'plank':{anc:'mid',b:{rx:88,ua:[.15,0,1],fa:[.05,1,.05]},f:[F(1.5,{}),F(1.5,{t:[-3,0,0]})]},
@@ -451,6 +460,11 @@ const A={
  'sl-er':{anc:'mid',pr:{db:1},b:{rz:90,th:[0,-.55,.85],sh:[0,-1,-.3],ua:[.08,-1,.05],ub:[-.15,1,.2],fb:[.3,.7,.6]},f:[F(1.1,{fa:[-.5,0,.85]}),F(1.1,{fa:[.85,0,.45]})]},
  'scissor':{cut:1,pr:{ladder:1},b:{},f:[]},
  'tcone':{cut:1,pr:{cones:1},b:{},f:[]},
+ 'leg-press':{cy:1.5,gf:'none',anc:'root',pr:{mach:'lp'},b:{gy:.5,rx:-55,th:[.15,-.3,.95],sh:[.1,-.5,.85],ti:[-.15,-.3,.95],si:[-.1,-.5,.85]},ikF:[[[.14,.75,.36],[.14,.94,.6]],[[-.14,.75,.36],[-.14,.94,.6]]],ikH:[[[.34,.45,.1],[.34,.45,.1]],[[-.34,.45,.1],[-.34,.45,.1]]],f:[F(.3,{k:1}),F(1.1,{k:1}),F(.8,{k:0})]},
+ 'lat-pull':{gf:'none',anc:'root',pr:{mach:'pd'},b:{gy:.64,t:[-8,0,0],th:[.12,-.05,1],sh:[.1,-1,.05],ua:[.9,.3,0],fa:[.3,1,0]},ikH:[[[.4,1.66,.12],[.4,1.12,.15]],[[-.4,1.66,.12],[-.4,1.12,.15]]],hp:[1,-.3,-.2],f:[F(.8,{k:0}),F(.25,{k:1,t:[-15,0,0]}),F(1.1,{k:1,t:[-15,0,0]})]},
+ 'cable-row':{gf:'none',anc:'root',pr:{mach:'rw'},b:{gy:.57,pz:-.15,th:[.12,.1,1],sh:[.1,-.3,.95],ua:[.15,-.3,.95],fa:[.05,-.2,1]},ikF:[[[.12,.22,.62],[.12,.22,.62]],[[-.12,.22,.62],[-.12,.22,.62]]],ikH:[[[.07,.82,.5],[.12,.82,.06]],[[-.07,.82,.5],[-.12,.82,.06]]],hp:[.3,-.5,-.6],f:[F(.7,{k:0,t:[18,0,0]}),F(.3,{k:1,t:[-6,0,0]}),F(1,{k:1,t:[-6,0,0]})]},
+ 'leg-curl':{gf:'none',anc:'root',pr:{mach:'lc'},b:{gy:.64,pz:-.2,t:[-5,0,0],th:[.1,-.05,1],ti:[-.1,-.05,1],ua:[.3,-.9,.2],fa:[.1,-.5,.85]},f:[F(.9,{k:0,sh:[.1,-.15,1],si:[-.1,-.15,1]}),F(.3,{k:1,sh:[.1,-1,-.45],si:[-.1,-1,-.45]}),F(1.1,{k:1,sh:[.1,-1,-.45],si:[-.1,-1,-.45]})]},
+ 'face-pull':{plant:1,pr:{cable:{a:[0,1.65,1.12],to:'hands'}},b:{t:[-3,0,0],th:[.1,-.97,.15],sh:[.08,-1,-.05],ti:[-.1,-.97,-.2],si:[-.08,-1,-.2]},ikH:[[[.06,1.55,.6],[.3,1.62,.06]],[[-.06,1.55,.6],[-.3,1.62,.06]]],hp:[.9,.6,-.2],f:[F(.6,{k:0}),F(.4,{k:1}),F(.9,{k:1})]},
  'sl-pogo':{b:SLB,f:[F(.17,SLD),F(.17,SLU)]},
  'sl-fb':{b:SLB,f:hopSeq([[0,0],[0,.17],[0,0],[0,-.17]])},
  'sl-tri':{b:SLB,f:hopSeq([[0,0],[0,.18],[0,0],[.18,0],[0,0],[0,-.18]])},
@@ -486,7 +500,7 @@ const A={
 const N3=v=>{const l=Math.hypot(v[0],v[1],v[2])||1;return[v[0]/l,v[1]/l,v[2]/l]};
 function full(p){const o=m(ST,p);o.ub=p.ub||mir(o.ua);o.fb=p.fb||mir(o.fa);o.ti=p.ti||mir(o.th);o.si=p.si||mir(o.sh);return o}
 Object.values(A).forEach(a=>{a.F=a.f.map(([d,p])=>({d,p:full(m(a.b,p))}));a.T=a.F.reduce((s,x)=>s+x.d,0)});
-const VK=['ua','fa','ub','fb','th','sh','ti','si'],NK=['rx','ry','rz','gy','toe'];
+const VK=['ua','fa','ub','fb','th','sh','ti','si'],NK=['rx','ry','rz','gy','toe','k'];
 /* monotone cubic: passes through every key, eases into stops and turn-arounds, flows through in-between keys */
 const tg=(a0,a1,a2)=>{const d0=a1-a0,d1=a2-a1;if(d0*d1<=0)return 0;const mm=(d0+d1)/2,lim=3*Math.min(Math.abs(d0),Math.abs(d1));return Math.sign(mm)*Math.min(Math.abs(mm),lim)};
 const herm=(a0,a1,a2,a3,u)=>{const m1=tg(a0,a1,a2),m2=tg(a1,a2,a3),u2=u*u,u3=u2*u;return(2*u3-3*u2+1)*a1+(u3-2*u2+u)*m1+(-2*u3+3*u2)*a2+(u3-u2)*m2};
@@ -567,6 +581,22 @@ function build3D(){
  P3.hurdle=G0();[-.3,.3].forEach(z=>{const p=new T.Mesh(new T.BoxGeometry(.025,.3,.025),M.cone);p.position.set(0,.15,z);P3.hurdle.add(p)});{const t=new T.Mesh(new T.BoxGeometry(.025,.025,.64),M.cone);t.position.y=.3;P3.hurdle.add(t)}
  P3.ladder=G0();[-.05,.42].forEach(z=>{const r=new T.Mesh(new T.BoxGeometry(2.8,.008,.025),M.cone);r.position.set(0,.005,z);P3.ladder.add(r)});for(let i=0;i<7;i++){const r=new T.Mesh(new T.BoxGeometry(.025,.008,.47),M.cone);r.position.set(-1.35+i*.45,.005,.185);P3.ladder.add(r)}
  P3.cones=G0();[[0,0],[.9,0],[-.9,0],[0,-1.5]].forEach(([x,z])=>{const c=new T.Mesh(new T.ConeGeometry(.07,.2,16),M.cone);c.position.set(x,.1,z);P3.cones.add(c)});
+
+ const MM={frame:new T.MeshStandardMaterial({color:lin(0x3a404d),roughness:.35,metalness:.6}),pad:mat(0x161a24,.7),chrome:new T.MeshStandardMaterial({color:lin(0xc9ced6),roughness:.2,metalness:.9}),plate:mat(0x23262e,.5),cable:mat(0x2a2d33,.4)};
+ const bx=(p,w,h,d,mt,x,y,z,rx=0)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),mt);o.position.set(x,y,z);o.rotation.x=rx;p.add(o);return o};
+ const cy=(p,r,h,mt,x,y,z,axis)=>{const o=new T.Mesh(new T.CylinderGeometry(r,r,h,16),mt);o.position.set(x,y,z);if(axis==='x')o.rotation.z=Math.PI/2;if(axis==='z')o.rotation.x=Math.PI/2;p.add(o);return o};
+ const pulley=(p,x,y,z)=>{const w=new T.Mesh(new T.TorusGeometry(.05,.013,8,18),MM.chrome);w.rotation.y=Math.PI/2;w.position.set(x,y,z);p.add(w);return w};
+ const stack=(p,x,z)=>{const g=G0();g.position.set(x,0,z);p.add(g);[-.13,.13].forEach(dx=>cy(g,.012,1.4,MM.chrome,dx,.74,0));bx(g,.36,.05,.22,MM.frame,0,.04,0);bx(g,.36,.05,.22,MM.frame,0,1.44,0);const fx=G0(),mov=G0();g.add(fx,mov);for(let i=0;i<13;i++)bx(i<7?fx:mov,.3,.044,.17,MM.plate,0,.1+i*.048,0);cy(mov,.008,.55,MM.chrome,0,.9,0);g.userData.mov=mov;return g};
+ P3.tower=G0();{const g=P3.tower;bx(g,.78,.05,.6,MM.frame,0,.025,0);[-.28,.28].forEach(x=>bx(g,.07,2.2,.07,MM.frame,x,1.1,-.05));bx(g,.63,.07,.07,MM.frame,0,2.2,-.05);g.userData.stack=stack(g,0,-.15);const car=G0();g.add(car);bx(car,.14,.14,.1,MM.frame,0,0,.04);pulley(car,0,0,.13);bx(car,.5,.04,.04,MM.frame,0,0,-.03);g.userData.car=car}
+ P3.rack=G0();{const g=P3.rack;[[-.54,-.45],[.54,-.45],[-.54,.45],[.54,.45]].forEach(([x,z])=>bx(g,.07,2.25,.07,MM.frame,x,1.125,z));[-.45,.45].forEach(z=>bx(g,1.15,.07,.07,MM.frame,0,2.22,z));[-.54,.54].forEach(x=>{bx(g,.07,.07,.97,MM.frame,x,2.22,0);bx(g,.09,.05,1.05,MM.frame,x,.03,0);cy(g,.025,1,MM.chrome,x,.62,0,'z');bx(g,.07,.06,.14,MM.chrome,x,1.38,.5)});bx(g,1.4,.03,1.05,MM.pad,0,.012,0)}
+ P3.lp=G0();{const g=P3.lp;bx(g,.8,.07,2.3,MM.frame,0,.035,.4);const d=new V(0,.6,.8);[-.28,.28].forEach(x=>{const r=cy(g,.03,1.7,MM.chrome,x,0,0);r.position.set(x,.8,.68);r.quaternion.setFromUnitVectors(UP,d);bx(g,.06,.62,.06,MM.frame,x,.31,.1);bx(g,.06,1.2,.06,MM.frame,x,.6,1.2)});
+  bx(g,.52,.08,.48,MM.pad,0,.36,.06,R(20));bx(g,.52,.07,.8,MM.pad,0,.58,-.36,R(35));bx(g,.08,.4,.08,MM.frame,0,.18,.05);bx(g,.08,.7,.08,MM.frame,0,.32,-.72);[-.35,.35].forEach(x=>cy(g,.022,.2,MM.chrome,x,.44,.1,'z'));
+  const sl=G0();g.add(sl);bx(sl,.72,.6,.05,MM.frame,0,0,0,R(-36.87));[-.42,.42].forEach(x=>{cy(sl,.2,.05,MM.plate,x,-.08,.1,'x');cy(sl,.025,.16,MM.chrome,x*.9,-.08,.1,'x')});[-.28,.28].forEach(x=>bx(sl,.1,.1,.24,MM.frame,x,-.13,.1,R(-36.87)));g.userData.sled=sl}
+ P3.pd=G0();{const g=P3.pd;bx(g,.9,.06,1.4,MM.frame,0,.03,-.2);bx(g,.12,2.4,.12,MM.frame,0,1.2,-.62);bx(g,.1,.1,.85,MM.frame,0,2.36,-.22);pulley(g,0,2.3,.14);bx(g,.46,.08,.44,MM.pad,0,.5,0);bx(g,.08,.46,.08,MM.frame,0,.25,0);bx(g,.06,.68,.06,MM.frame,0,.4,.3);cy(g,.05,.5,MM.pad,0,.76,.28,'x');g.userData.stack=stack(g,0,-.85);
+  const bar=G0();g.add(bar);cy(bar,.016,1.0,MM.chrome,0,0,0,'x');[-1,1].forEach(sg=>{const e=cy(bar,.016,.22,MM.chrome,sg*.57,-.05,0);e.rotation.z=sg*-1.1});cy(bar,.006,.12,MM.cable,0,.06,0);g.userData.bar=bar}
+ P3.rw=G0();{const g=P3.rw;bx(g,.34,.06,1.6,MM.frame,0,.2,.15);bx(g,.36,.08,.5,MM.pad,0,.4,-.18);[-.3,.5].forEach(z=>bx(g,.06,.37,.06,MM.frame,0,.19,z));bx(g,.55,.32,.05,MM.frame,0,.26,.7,R(-20));bx(g,.16,1.8,.16,MM.frame,0,.9,1.24);bx(g,.6,.05,.4,MM.frame,0,.025,1.3);g.userData.stack=stack(g,0,1.48);pulley(g,0,.3,1.12);const h=G0();g.add(h);cy(h,.014,.2,MM.chrome,0,0,0,'x');bx(h,.05,.03,.08,MM.chrome,0,0,.04);g.userData.h=h}
+ P3.lc=G0();{const g=P3.lc;bx(g,.8,.06,1.0,MM.frame,0,.03,0);bx(g,.46,.08,.46,MM.pad,0,.5,-.05);bx(g,.46,.62,.08,MM.pad,0,.88,-.33,R(-8));bx(g,.08,.46,.08,MM.frame,0,.25,-.05);bx(g,.06,.6,.06,MM.frame,.3,.42,.22);cy(g,.05,.5,MM.pad,0,.74,.2,'x');g.userData.stack=stack(g,.62,-.1)}
+ P3.lcRoll=cy(G0(),.055,.5,MM.pad,0,0,0,'x');P3.lcArm=cyl(MM.frame);P3.cable=cyl(MM.cable);
  Object.values(P3).forEach(o=>{o.visible=false;o.traverse(c=>{if(c.isMesh){c.castShadow=true;c.receiveShadow=true}});scene.add(o)});
  // solvers
  const tv=new V(),q1=new T.Quaternion(),q2=new T.Quaternion(),qq=new T.Quaternion(),qy=new T.Quaternion(),eY=new T.Euler();
@@ -585,7 +615,7 @@ function build3D(){
   lL.e.quaternion.identity();lR.e.quaternion.identity();root.updateMatrixWorld(true);
   if(!lying){eY.set(0,R(p.ry),0);qy.setFromEuler(eY);[lL,lR].forEach(l=>{l.l.getWorldQuaternion(qq);if(wp(l.e).sub(wp(l.l)).normalize().y<-.55)l.e.quaternion.copy(qq.invert().multiply(qy))});root.updateMatrixWorld(true)}
   if(p.toe>.5){[lL,lR].forEach(l=>l.e.rotateX(R(p.toe)));root.updateMatrixWorld(true)}
-  let mn=1e9;(a.gf==='feet'?[lL.h,lL.to,lR.h,lR.to]:mk).forEach(o=>{const y=wp(o).y;if(y<mn)mn=y});
+  let mn=a.gf==='none'?0:1e9;(a.gf==='none'?[]:a.gf==='feet'?[lL.h,lL.to,lR.h,lR.to]:mk).forEach(o=>{const y=wp(o).y;if(y<mn)mn=y});
   const fz=[lL.h,lL.to,lR.h,lR.to].map(wp),az=fz.reduce((s,v)=>s+v.z,0)/4,ax=fz.reduce((s,v)=>s+v.x,0)/4;
   const lz=(wp(lL.h).z+wp(lL.to).z)/2,cz=a.anc==='mid'?(az+wp(hm).z)/2:a.anc==='lf'?lz:a.anc==='root'?0:az;
   root.position.set(p.px-(a.ax?ax:0),-mn+.004+p.air+p.gy,p.pz-cz);root.updateMatrixWorld(true);
@@ -599,6 +629,7 @@ function build3D(){
   // planted feet: two-bone IK keeps them fixed while the body moves
   if(a.plant){const w=Math.max(0,Math.min(1,1-p.air/.03));if(w>0){[[lL,0,p.th],[lR,1,p.ti]].filter(([,k])=>a.plant!=='l'||k===0).forEach(([l,k,th])=>{const tgt=root.worldToLocal(C0.feet[k].p.clone());const[d1,d2]=ik(l.base,tgt,l.L1,l.L2,new V(...th).add(new V(0,0,.35)));const a1=new V(...th),a2=new V(...(k?p.si:p.sh));setL(l,a1.lerp(d1,w),a2.lerp(d2,w))});root.updateMatrixWorld(true);
    (a.plant==='l'?[lL]:[lL,lR]).forEach((l,k)=>{l.l.getWorldQuaternion(qq);const target=qq.clone().invert().multiply(C0.feet[k].q);l.e.quaternion.slerp(target,w)});root.updateMatrixWorld(true)}}
+  if(a.ikF){[[lL,0,p.th],[lR,1,p.ti]].forEach(([l,i,th])=>{const t0=a.ikF[i],tg=new V(...t0[0]).lerp(new V(...t0[1]),p.k);const[d1,d2]=ik(l.base,root.worldToLocal(tg),l.L1,l.L2,new V(...th).add(new V(0,0,.35)));setL(l,d1,d2)});root.updateMatrixWorld(true)}
   // equipment and hand placement
   Object.values(P3).forEach(o=>o.visible=false);
   const mid=hands(),cq=chest.getWorldQuaternion(new T.Quaternion()),cx=new V(1,0,0).applyQuaternion(cq);
@@ -612,9 +643,16 @@ function build3D(){
   if(pr.bar){P3.bar.visible=true;if(pr.bar==='back'){const c=chest.localToWorld(new V(0,.275,-.1));P3.bar.position.copy(c);P3.bar.quaternion.copy(cq);grips=[c,c];spread=.42}else{P3.bar.position.copy(mid);eY.set(0,R(p.ry),0);P3.bar.quaternion.setFromEuler(eY);grips=[mid,mid];spread=.21}}
   if(pr.kb){P3.kb.visible=true;P3.kb.position.copy(mid);eY.set(0,R(p.ry)+Math.PI/2,0);P3.kb.quaternion.setFromEuler(eY);grips=[mid,mid]}
   if(pr.lm){P3.lm.visible=true;placeSeg(P3.lm,new V(...pr.lm),mid,.022);grips=[mid,mid];spread=.045}
-  if(pr.band&&pr.band.to==='hands')grips=[mid,mid];
+  if((pr.band&&pr.band.to==='hands')||(pr.cable&&!a.ikH))grips=[mid,mid];
   if(grips){const ax=pr.bar==='hands'?new V(1,0,0).applyEuler(eY.set(0,R(p.ry),0)):cx;[[aL,1,p.ua],[aR,-1,p.ub]].forEach(([r,s,ua])=>{const g=grips[0].clone().addScaledVector(ax,s*spread);const[d1,d2]=ik(r.base,chest.worldToLocal(g),r.L1,r.L2,new V(...ua).add(new V(0,-.25,-.3)));setL(r,d1,d2)});root.updateMatrixWorld(true)}
-  const hL=wp(aL.e),hR=wp(aR.e);
+  if(a.ikH){[[aL,0,p.ua,1],[aR,1,p.ub,-1]].forEach(([r,i,ua,sg])=>{const h=a.ikH[i],tg=new V(...h[0]).lerp(new V(...h[1]),p.k);const pole=a.hp?new V(sg*a.hp[0],a.hp[1],a.hp[2]):new V(...ua).add(new V(0,-.25,-.3));const[d1,d2]=ik(r.base,chest.worldToLocal(tg),r.L1,r.L2,pole);setL(r,d1,d2)});root.updateMatrixWorld(true)}
+  const hL=wp(aL.e),hR=wp(aR.e),kk=p.k;
+  if(pr.cable){const g=P3.tower,an=new V(...pr.cable.a),out=new V(an.x,0,an.z).normalize();g.visible=true;g.position.set(an.x+out.x*.1,0,an.z+out.z*.1);g.rotation.set(0,Math.atan2(-an.x,-an.z),0);g.userData.car.position.y=an.y;const to=hands();P3.cable.visible=true;placeSeg(P3.cable,an,to,.006);g.userData.stack.userData.mov.position.y=Math.min(.45,Math.max(0,(an.distanceTo(to)-1)*.5))}
+  if(pr.mach==='lp'){const g=P3.lp;g.visible=true;const fm=wp(lL.e).add(wp(lR.e)).multiplyScalar(.5);g.userData.sled.position.copy(fm.addScaledVector(new V(0,.6,.8),.09))}
+  if(pr.mach==='pd'){const g=P3.pd;g.visible=true;const b=new V(0,1.66,.12).lerp(new V(0,1.12,.15),kk);g.userData.bar.position.copy(b);P3.cable.visible=true;placeSeg(P3.cable,new V(0,2.3,.14),b,.006);g.userData.stack.userData.mov.position.y=kk*.4}
+  if(pr.mach==='rw'){const g=P3.rw;g.visible=true;const h=hands();g.userData.h.position.copy(h);P3.cable.visible=true;placeSeg(P3.cable,new V(0,.3,1.1),h,.006);g.userData.stack.userData.mov.position.y=kk*.35}
+  if(pr.mach==='lc'){const g=P3.lc;g.visible=true;const an=wp(lL.e).add(wp(lR.e)).multiplyScalar(.5),kn=wp(lL.l).add(wp(lR.l)).multiplyScalar(.5),sd=an.clone().sub(kn).normalize(),rp=an.clone().addScaledVector(new V(0,-sd.z,sd.y),.075);rp.x=0;P3.lcRoll.visible=true;P3.lcRoll.position.copy(rp);P3.lcArm.visible=true;placeSeg(P3.lcArm,new V(.3,kn.y,kn.z),new V(.3,rp.y,rp.z),.025);g.userData.stack.userData.mov.position.y=kk*.35}
+  if(pr.rack)P3.rack.visible=true;
   if(pr.db){P3.db.visible=true;P3.db.position.copy(pr.db==='pelvis'?wp(root).add(new V(0,.13,0)):hL);root.getWorldQuaternion(P3.db.quaternion);if(pr.db===2){P3.db2.visible=true;P3.db2.position.copy(hR);P3.db2.quaternion.copy(P3.db.quaternion)}}
   if(pr.band){P3.band.visible=true;P3.anchor.visible=true;const an=new V(...pr.band.a);P3.anchor.position.set(an.x+Math.sign(an.x||1)*.05,0,an.z+(an.x?0:-.05));const to=pr.band.to==='rh'?hR:pr.band.to==='lh'?hL:pr.band.to==='pelvis'?wp(root):hands();const L=an.distanceTo(to);placeSeg(P3.band,an,to,Math.max(.007,.016/Math.sqrt(L/.8)))}
   if(pr.box){(Array.isArray(pr.box[0])?pr.box:[pr.box]).forEach((b,i)=>{const o=i?P3.box2:P3.box;const[x,z,w,h,d,rx=0,y]=b;o.visible=true;o.scale.set(w,h,d);o.position.set(x,y??h/2,z);o.rotation.set(R(rx),0,0)})}
@@ -649,7 +687,7 @@ try{
  let last=performance.now(),fr=0,tt=0;
  const loop=now=>{const dt=Math.min(.05,(now-last)/1000);last=now;if(anim.play)anim.t+=dt*anim.speed;tt+=dt;fr++;
   G.blob.visible=false;const pel=G.pose(by[cur],anim.t);place(cam,pel,view.yaw,3.6,true);ren.render(G.scene,cam);
-  if(fr%2===0&&thumbVis.size){G.blob.visible=true;const still=!anim.play;thumbVis.forEach(c=>{const ex=by[c.dataset.x]||{pat:c.dataset.x};const p=G.pose(ex,still?.9:tt+hash(c.dataset.x));place(tcam,p,.55,3.5,false);tren.render(G.scene,tcam);const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.drawImage(tc,0,0,c.width,c.height)})}
+  if(fr%2===0&&thumbVis.size){G.blob.visible=true;const still=!anim.play;thumbVis.forEach(c=>{const ex=by[c.dataset.x]||{pat:c.dataset.x};const p=G.pose(ex,still?.9:tt+hash(c.dataset.x));place(tcam,p,A[ex.pat||ex.id]?.cy??.55,3.5,false);tren.render(G.scene,tcam);const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.drawImage(tc,0,0,c.width,c.height)})}
   requestAnimationFrame(loop)};
  requestAnimationFrame(loop);
 }catch(err){G=null;console.error(err);$('smsg').textContent='3D demos could not load in this view. Everything else still works.'}
