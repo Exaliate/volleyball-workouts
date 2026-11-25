@@ -76,6 +76,12 @@ button.pri{background:var(--org);border-color:var(--org);color:#fff}
 .tools{display:grid;gap:10px;margin:12px 0 16px}
 input,select,textarea{font:16px Inter,sans-serif;width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
 textarea{min-height:130px;resize:vertical}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--blue2);border-radius:999px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;min-height:40px;font-size:14px;padding:0 8px}
+.seg button.on{background:var(--blue);color:#fff}
+.kit{font-size:13px;color:var(--mute)}
+.tag.gy{background:light-dark(#20242e,#e8ecf5);color:light-dark(#fff,#141a2e)}
+.tag.hm{background:color-mix(in srgb,#1fa463 18%,transparent);color:light-dark(#0f6b3f,#8fe0b6)}
 .chips button{min-height:38px;font-size:14px;padding:0 12px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .ex{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
@@ -177,6 +183,7 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}
   <section class="lib" aria-labelledby="lh">
     <h2 id="lh">Exercise library</h2>
     <div class="tools">
+      <div class="seg" id="eqseg" role="group" aria-label="Equipment"><button data-eq="all">All equipment</button><button data-eq="home">No gym</button><button data-eq="gym">Gym</button></div>
       <input type="search" id="q" placeholder="Search: med ball, landing, rotator cuff…" aria-label="Search exercises">
       <div class="row chips" id="cats"></div>
       <div class="row chips" id="srcs"></div>
@@ -371,8 +378,9 @@ function renderLib(){
  $('cats').innerHTML=['all',...Object.keys(C)].map(c=>`<button class="${cat===c?'on':''}" data-c="${c}">${c==='all'?'All types':esc(C[c])}</button>`).join('');
  $('srcs').innerHTML=[['all','All sources'],['pop','Popular reels'],['ig','Your reels'],['web','Web']].map(([k,l])=>`<button class="${src===k?'on':''}" data-s="${k}">${l}</button>`).join('');
  const inS=new Set(st.session.items.map(i=>i.id)),ql=q.toLowerCase();
- const list=E.filter(e=>(cat==='all'||e.c===cat)&&(src==='all'||(src==='pop'?!!srcOf(e).pop:src==='ig'?!!srcOf(e).ig:!srcOf(e).ig&&!srcOf(e).pop))&&(!ql||(e.n+' '+e.cue+' '+(C[e.c]||'')).toLowerCase().includes(ql)));
- $('grid').innerHTML=list.length?list.map(e=>{const so=srcOf(e);return `<article class="ex ${e.id===cur?'cur':''}"><canvas class="thumb" data-x="${esc(e.id)}" data-w="${esc(e.id)}" width="240" height="160" aria-label="3D demo of ${esc(e.n)}" role="img"></canvas><div class="exb"><div class="row"><span class="tag">${esc(C[e.c]||'')}</span>${so.ig?'<span class="tag ig">From your reels</span>':so.pop?'<span class="tag ig">Popular reel</span>':''}</div><h3>${esc(e.n)}</h3><span class="dose">${esc(e.d)}${e.fs?' <small>from source</small>':''}</span><p>${esc(e.cue)}</p><div class="foot"><a href="${esc(safeUrl(so.u))}" target="_blank" rel="noopener">${esc(so.n)}</a><span class="row"><button class="add" data-w="${esc(e.id)}">Watch</button><button class="add ${inS.has(e.id)?'in':''}" data-a="${esc(e.id)}">${inS.has(e.id)?'Added':'Add'}</button></span></div></div></article>`}).join(''):'<p class="empty" style="grid-column:1/-1">Nothing matches. Try another word or clear the filters.</p>';
+ document.querySelectorAll('[data-eq]').forEach(b=>b.classList.toggle('on',b.dataset.eq===(st.eq||'all')));
+ const list=E.filter(e=>eqOk(e)&&(cat==='all'||e.c===cat)&&(src==='all'||(src==='pop'?!!srcOf(e).pop:src==='ig'?!!srcOf(e).ig:!srcOf(e).ig&&!srcOf(e).pop))&&(!ql||(e.n+' '+e.cue+' '+(C[e.c]||'')).toLowerCase().includes(ql)));
+ $('grid').innerHTML=list.length?list.map(e=>{const so=srcOf(e);return `<article class="ex ${e.id===cur?'cur':''}"><canvas class="thumb" data-x="${esc(e.id)}" data-w="${esc(e.id)}" width="240" height="160" aria-label="3D demo of ${esc(e.n)}" role="img"></canvas><div class="exb"><div class="row"><span class="tag">${esc(C[e.c]||'')}</span>${so.ig?'<span class="tag ig">From your reels</span>':so.pop?'<span class="tag ig">Popular reel</span>':''}</div><h3>${esc(e.n)}</h3><span class="kit">${(q=>`<span class="tag ${q.gym?'gy':'hm'}">${q.gym?'Gym':'No gym'}</span> ${q.list.length?'Needs: '+esc(q.list.join(', ')):'Bodyweight only'}`)(eqOf(e))}</span><span class="dose">${esc(e.d)}${e.fs?' <small>from source</small>':''}</span><p>${esc(e.cue)}</p><div class="foot"><a href="${esc(safeUrl(so.u))}" target="_blank" rel="noopener">${esc(so.n)}</a><span class="row"><button class="add" data-w="${esc(e.id)}">Watch</button><button class="add ${inS.has(e.id)?'in':''}" data-a="${esc(e.id)}">${inS.has(e.id)?'Added':'Add'}</button></span></div></div></article>`}).join(''):'<p class="empty" style="grid-column:1/-1">Nothing matches. Try another word or clear the filters.</p>';
  observeThumbs();
 }
 function renderReels(){
@@ -380,6 +388,14 @@ function renderReels(){
  $('rlist').innerHTML=all.map(r=>{const n=r.ex.filter(id=>by[id]).length;return `<div class="rl"><b>${esc(r.title||'Saved reel')}</b><small>${esc(r.by||'')}${r.by?' · ':''}${n} exercise${n===1?'':'s'}${r.builtin?' · built in':''}</small><a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener" style="font-size:14px;overflow-wrap:anywhere">${esc(r.url)}</a><div class="row"><button class="add" data-br="${esc(r.id)}">Build workout</button>${r.builtin?'':`<button class="add" data-dr="${esc(r.id)}">Delete</button>`}</div></div>`}).join('');
 }
 function setCur(id){if(!by[id])return;cur=id;try{view.yaw=A[by[id].pat]?.cy??.6}catch(_){};const e=by[id];$('vname').textContent=e.n;$('vcat').textContent=C[e.c]||'';$('vcue').textContent=e.d+' · '+e.cue;document.querySelectorAll('.ex').forEach(a=>a.classList.toggle('cur',a.querySelector('.thumb')?.dataset.x===id));document.querySelectorAll('.it').forEach(li=>li.classList.toggle('cur',li.querySelector('.nm')?.dataset.w===id));anim.t=0}
+const KIT={ball:'med ball',band:'band',db:'dumbbells',kb:'kettlebell',box:'box or bench',hurdle:'mini hurdle',ladder:'agility ladder',cones:'cones',wall:'wall'};
+const GYM={bar:'barbell',rack:'squat rack',cable:'cable machine',lm:'landmine',lp:'leg press',pd:'lat pulldown',rw:'cable row machine',lc:'leg curl machine'};
+const EQX={'bar-rot':{gym:false,list:['PVC pipe or light bar']}};
+function eqOf(e){if(EQX[e.pat])return EQX[e.pat];const pr=(A[e.pat]||{}).pr||{},list=[];let gym=false;
+ Object.keys(pr).forEach(k=>{if(k==='mach'){gym=true;list.push(GYM[pr.mach])}else if(GYM[k]){gym=true;list.push(GYM[k])}else if(KIT[k])list.push(KIT[k])});
+ if(pr.db===2&&!list.includes('dumbbells'))list.push('dumbbells');
+ return{gym,list:[...new Set(list)]}}
+const eqOk=e=>!st.eq||st.eq==='all'||(st.eq==='gym')===eqOf(e).gym;
 const all=()=>{renderSess();renderLib();renderReels();save()};
 
 document.addEventListener('click',ev=>{
@@ -387,6 +403,7 @@ document.addEventListener('click',ev=>{
  if(d.p){st.session={preset:d.p,items:P[d.p].map(id=>({id,done:0}))};all();setCur(P[d.p][0])}
  else if(d.j!==undefined){const it=st.session.items[+d.i],j=+d.j;it.done=it.done===j+1?j:j+1;all();setCur(it.id);if(it.done===j+1)startT()}
  else if(d.rm!==undefined){st.session.items.splice(+d.rm,1);st.session.preset='';all()}
+ else if(d.eq){st.eq=d.eq;renderLib();save()}
  else if(d.c){cat=d.c;renderLib()}
  else if(d.s){src=d.s;renderLib()}
  else if(d.a){const k=st.session.items.findIndex(i=>i.id===d.a);k<0?st.session.items.push({id:d.a,done:0}):st.session.items.splice(k,1);st.session.preset='';all()}
@@ -401,8 +418,8 @@ const GT={bal:['shoulder','land','jump','strength','strength','core','core','fee
 const GN={bal:'Balanced',pow:'Jump power',core:'Core & rotation',sh:'Shoulder care',quick:'Quick 4-move'};
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 $('gen').onclick=()=>{const f=$('gfocus').value,used=new Set(),pats=new Set(),out=[];
- GT[f].forEach(c=>{const pool=shuf(E.filter(e=>e.c===c&&!used.has(e.id)));const pick=pool.find(e=>!pats.has(e.pat))||pool[0]||shuf(E.filter(e=>!used.has(e.id)))[0];if(pick){used.add(pick.id);pats.add(pick.pat);out.push(pick.id)}});
- st.session={preset:'',gen:GN[f],items:out.map(id=>({id,done:0}))};all();setCur(out[0]);};
+ GT[f].forEach(c=>{const pool=shuf(E.filter(e=>e.c===c&&!used.has(e.id)&&eqOk(e)));const pick=pool.find(e=>!pats.has(e.pat))||pool[0]||shuf(E.filter(e=>!used.has(e.id)&&eqOk(e)))[0];if(pick){used.add(pick.id);pats.add(pick.pat);out.push(pick.id)}});
+ st.session={preset:'',gen:GN[f]+(st.eq&&st.eq!=='all'?(st.eq==='gym'?' · gym':' · no gym'):''),items:out.map(id=>({id,done:0}))};all();setCur(out[0]);};
 $('clear').onclick=()=>{st.session={preset:'',items:[]};all()};
 $('copy').onclick=async()=>{const t=st.session.items.filter(i=>by[i.id]).map(i=>`${by[i.id].n} — ${by[i.id].d}`).join('\n');try{await navigator.clipboard.writeText(t);$('copy').textContent='Copied'}catch(e){$('copy').textContent='Copy blocked'}setTimeout(()=>$('copy').textContent='Copy session',1500)};
 let len=90,left=90,tm=null;
