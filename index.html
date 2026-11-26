@@ -176,13 +176,13 @@ label{font-weight:600;font-size:14px;display:grid;gap:6px}
       <div class="row presets" id="presets"></div>
       <div class="gen"><label for="gfocus" class="vh">Workout focus</label><select id="gfocus"><option value="bal">Balanced</option><option value="pow">Jump power</option><option value="core">Core &amp; rotation</option><option value="sh">Shoulder care</option><option value="quick">Quick 4-move</option></select><button class="pri" id="gen">Generate workout</button></div>
       <p class="note" id="glabel" style="margin:0 0 10px"></p>
-      <div class="wuo"><label class="chk" style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="wuchk"> Start with a stretch warm-up</label><button id="wugo" class="add">Start guided warm-up</button></div>
+      <div class="wuo"><label class="chk" style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="wuchk"> Start with a stretch warm-up</label><span class="row" style="gap:6px"><button class="add" data-wl="30">30 s each</button><button class="add" data-wl="40">40 s each</button></span><button id="wugo" class="add">Start guided warm-up</button></div>
       <div class="prog" aria-hidden="true"><i id="bar"></i></div>
       <div class="meta"><span id="pct"></span><span id="cnt"></span></div>
       <ul class="list" id="slist"></ul>
       <div class="timer">
         <span class="clock" id="clock" aria-live="polite">1:30</span>
-        <button data-t="60">60 s</button><button data-t="90">90 s</button><button data-t="120">2 min</button>
+        <button data-t="30">30 s</button><button data-t="60">60 s</button><button data-t="90">90 s</button><button data-t="120">2 min</button>
         <button id="go">Start</button>
       </div>
       <div class="row" style="margin-top:12px"><button id="copy">Copy session</button><button id="clear">Clear</button></div>
@@ -426,7 +426,7 @@ function eqOf(e){if(EQX[e.pat])return EQX[e.pat];const pr=(A[e.pat]||{}).pr||{},
  if(pr.db===2&&!list.includes('dumbbells'))list.push('dumbbells');
  return{gym,list:[...new Set(list)]}}
 const eqOk=e=>!st.eq||st.eq==='all'||(st.eq==='gym')===eqOf(e).gym;
-const all=()=>{if(st.wu===undefined)st.wu=true;$('wuchk').checked=!!st.wu;renderSess();renderLib();renderReels();save()};
+const all=()=>{if(st.wu===undefined)st.wu=true;document.querySelectorAll('[data-wl]').forEach(x=>x.classList.toggle('on',+x.dataset.wl===(st.wl||40)));$('wuchk').checked=!!st.wu;renderSess();renderLib();renderReels();save()};
 
 document.addEventListener('click',ev=>{
  const b=ev.target.closest('button,canvas.thumb');if(!b)return;const d=b.dataset;
@@ -438,6 +438,7 @@ document.addEventListener('click',ev=>{
  else if(d.s){src=d.s;renderLib()}
  else if(d.a){const k=st.session.items.findIndex(i=>i.id===d.a);k<0?st.session.items.push({id:d.a,done:0}):st.session.items.splice(k,1);st.session.preset='';all()}
  else if(d.w){setCur(d.w);if(window.innerWidth<900)$('stage').scrollIntoView({behavior:'smooth',block:'start'})}
+ else if(d.wl){st.wl=+d.wl;document.querySelectorAll('[data-wl]').forEach(x=>x.classList.toggle('on',+x.dataset.wl===st.wl));save()}
  else if(d.t){len=+d.t;stopT();show(len)}
  else if(d.sp){anim.speed=+d.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('on',x===b))}
  else if(d.cam){view.yaw=+d.cam}
@@ -459,7 +460,7 @@ const tick=()=>{if(!wr||wr.paused)return;wr.left--;if(wr.left<=0){const it=st.se
 $('wugo').onclick=()=>{if(wr){wuEnd();return}
  let list=st.session.items.map((it,x)=>by[it.id]&&by[it.id].c==='warm'?x:-1).filter(x=>x>=0);
  if(!list.length){st.session.items=WU.map(id=>({id,done:0})).concat(st.session.items);all();list=WU.map((_,x)=>x)}
- wr={list,i:0,len:40,left:40,paused:false,tm:setInterval(tick,1000)};$('wubar').classList.add('on');$('wugo').textContent='Stop warm-up';$('wupause').textContent='Pause';wuGo(0);$('stage').scrollIntoView({behavior:'smooth',block:'start'})};
+ const L=st.wl||40;wr={list,i:0,len:L,left:L,paused:false,tm:setInterval(tick,1000)};$('wubar').classList.add('on');$('wugo').textContent='Stop warm-up';$('wupause').textContent='Pause';wuGo(0);$('stage').scrollIntoView({behavior:'smooth',block:'start'})};
 $('wupause').onclick=()=>{if(!wr)return;wr.paused=!wr.paused;$('wupause').textContent=wr.paused?'Resume':'Pause'};
 $('wuskip').onclick=()=>{if(wr)wuGo(wr.i+1)};
 $('wustop').onclick=()=>wuEnd();
